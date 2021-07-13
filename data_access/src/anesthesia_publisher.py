@@ -54,6 +54,15 @@ def datarec():
     anesthesia_info_pub = rospy.Publisher("/anesthesia_info",Anesthesia,queue_size = 1000)
     #设置循环的频率
     rate = rospy.Rate(10)
+    tcpServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # 绑定本地信息 bind
+    tcpServerSocket.bind(("", 5201))
+
+        # 让默认的套接字由主动变为被动 listen                                             
+    tcpServerSocket.listen(128)
+                                        
+    newClientSocket, clientAddr =tcpServerSocket.accept() 
     #开始接受数据
     while not rospy.is_shutdown():
         #####################################################################
@@ -61,21 +70,13 @@ def datarec():
         #####################################################################
         #初始化 保证没有的数据会输出-1
         anesthesia_msg = Anesthesia()
-        anesthesia_msg.MDC_PULS_RATE_NON_IN = -1
-        anesthesia_msg.MDC_PRESS_CUFF_DIA = -1
-        anesthesia_msg.MDC_PRESS_CUFF_SYS = -1
-        anesthesia_msg.MDC_PULS_OXIM_SAT_O2 = -1
-        anesthesia_msg.MDC_BLD_PERF_INDEX = -1
+        #anesthesia_msg.MDC_PULS_RATE_NON_IN = -1
+        #anesthesia_msg.MDC_PRESS_CUFF_DIA = -1
+        #anesthesia_msg.MDC_PRESS_CUFF_SYS = -1
+        #anesthesia_msg.MDC_PULS_OXIM_SAT_O2 = -1
+        #anesthesia_msg.MDC_BLD_PERF_INDEX = -1
         # 创建套接字 socket
-        tcpServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        # 绑定本地信息 bind
-        tcpServerSocket.bind(("", 7890))
-
-        # 让默认的套接字由主动变为被动 listen                                             
-        tcpServerSocket.listen(128)
-                                        
-        newClientSocket, clientAddr =tcpServerSocket.accept()                                 
+                                
 
         recv_data = newClientSocket.recv(1024) 
         rospy.loginfo('ready')
@@ -92,7 +93,6 @@ def datarec():
         finalmessage = ''        
         if li[0][0:3]=="MSH" and len(bfer)==0:
             bfer.append(li)
-            print('appended!')
         else:
             if li[0][0:3]!="MSH":
                 print("ceshi:",li[0][0:3])
@@ -129,7 +129,7 @@ def datarec():
                     pass
             #发布消息
             anesthesia_info_pub.publish(anesthesia_msg)
-            rospy.loginfo("publish anesthesia message[%s %s %s %s %s]",anesthesia_msg.RATE
+            rospy.loginfo("publish anesthesia message[%s %s %s %s %s %s]",anesthesia_msg.RATE
             ,anesthesia_msg.DIAP,anesthesia_msg.SYSP,anesthesia_msg.SpO2,
             anesthesia_msg.SaO2,anesthesia_msg.BIS)
             #按照循环频率延时
