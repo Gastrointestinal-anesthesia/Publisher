@@ -5,6 +5,7 @@ import socket
 from hl7parser.hl7 import HL7Message
 import rospy
 from data_access.msg import Anesthesia
+import numpy as np
 # 以下指标列表将会存一次完整测量中病人对应指标的序列
 SYSP = []                           # 收缩压
 DIAP = []                           # 舒张压
@@ -114,17 +115,23 @@ def datarec():
                 index = str(t[2]).split('^')[1]
                 value = t[4]
                 if index == 'MDC_ECG_HEART_RATE':
-                    anesthesia_msg.RATE = str(value)    
+                    anesthesia_msg.RATE = int(float(str(value))*100)
+                    anesthesia_msg.RATE = anesthesia_msg.RATE/100   
                 elif index == 'MDC_PRESS_CUFF_DIA':
-                    anesthesia_msg.DIAP = str(value)
+                    anesthesia_msg.DIAP =int(float(str(value))*100)
+                    anesthesia_msg.DIAP = anesthesia_msg.DIAP/100
                 elif index == 'MDC_PRESS_CUFF_SYS':
-                    anesthesia_msg.SYSP = str(value)
+                    anesthesia_msg.SYSP = int(float(str(value))*100)
+                    anesthesia_msg.SYSP = anesthesia_msg.SYSP/100
                 elif index == 'MDC_PULS_OXIM_SAT_O2':
-                    anesthesia_msg.SpO2 = str(value)
+                    anesthesia_msg.SpO2 = int(float(str(value))*100)
+                    anesthesia_msg.SpO2 = int(anesthesia_msg.SpO2/100)
                 elif index == 'MDC_BLD_PERF_INDEX':
-                    anesthesia_msg.SaO2 = str(value)
+                    anesthesia_msg.SaO2 = int(float(str(value))*100)
+                    anesthesia_msg.SaO2 = anesthesia_msg.SaO2/100
                 elif index == 'MNDRY_EEG_BISPECTRAL_INDEX':
-                    anesthesia_msg.BIS = str(value)
+                    anesthesia_msg.BIS = int(float(str(value))*100)
+                    anesthesia_msg.BIS = anesthesia_msg.BIS/100
                 if value == '':
                     pass
             #发布消息

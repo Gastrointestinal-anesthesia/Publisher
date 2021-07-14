@@ -1,6 +1,6 @@
-string RATE
-string DIAP
-string SYSP
-string SpO2
-string SaO2
-string BIS
+uint8 RATE
+uint8 DIAP
+uint8 SYSP
+uint8 SpO2
+uint8 SaO2
+uint8 BIS
